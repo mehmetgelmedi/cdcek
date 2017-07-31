@@ -1,0 +1,16 @@
+{
+  "dosya": [
+	{
+      "url": "https://gui.kentkart.com.tr/images/a.png",
+      "konum": "C:\\Users\\MEG\\Desktop\\"
+    },
+	{
+      "url": "https://github.com/mehmetgelmedi/DesignPatterns/archive/master.zip",
+      "konum": "C:\\"
+    },
+	{
+      "url": "http://www.java2s.com/Code/JarDownload/org.json/org.json.jar.zip",
+      "konum": "C:\\Users\\MEG\\Desktop\\"
+    }
+  ]
+}
