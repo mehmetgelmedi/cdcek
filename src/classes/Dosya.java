@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.CountDownLatch;
 
 public class Dosya implements Runnable {
 	
@@ -21,8 +22,9 @@ public class Dosya implements Runnable {
 	private Timer timer;
 	private Date date;
 	private String sure;
+	private CountDownLatch countDownLatch;
 	
-	public Dosya(String url, String konum, String sure) {
+	public Dosya(String url, String konum, String sure, CountDownLatch countDownLatch) {
 		try {
 			this.url=new URI(url);
 		} catch (URISyntaxException e) {
@@ -32,6 +34,7 @@ public class Dosya implements Runnable {
 		timer =new Timer();
 		date =new Date();
 		this.sure =sure;
+		this.countDownLatch=countDownLatch;
 	}
 	
 	public Runnable DosyaCek() {
@@ -44,6 +47,7 @@ public class Dosya implements Runnable {
 				    Files.copy(in, path, StandardCopyOption.REPLACE_EXISTING);
 				    in.close();
 				    System.out.println(getUzanti()+" ,dosyasi belirtilen konuma indirildi.");
+				    countDownLatch.countDown();
 				}catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -72,7 +76,7 @@ public class Dosya implements Runnable {
 
 	@Override
 	public void run() {
-		DosyaCek();		
+		DosyaCek();
 	}
 
 }

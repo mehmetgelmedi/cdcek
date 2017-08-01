@@ -1,11 +1,11 @@
 package cdcek;
 
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
 
 import classes.Dosya;
 import classes.JsonAyristir;
+import classes.VeriSeti;
 
 public class Main {
 
@@ -13,19 +13,23 @@ public class Main {
 	
 	public static void main(String[] args) {
 		//String sure ="31.07.2017 18:38:38";
-		Hashtable<String, String> hashtable= new JsonAyristir()
-				.dosyaUrlveKonumGetir(jsonDosyasi);
-		
-		//key = url , value = konum
-		
-		Set<String> keys=hashtable.keySet();
-		Iterator<String> itr = keys.iterator();
-		 
-	    while (itr.hasNext()) { 
-	       String str = itr.next();
-	       //System.out.println("Key: "+str+" & Value: "+hashtable.get(str));
-	       new Thread(new Dosya(str, hashtable.get(str), args[0]).DosyaCek()).start();
-	    }
-	    
+		ArrayList<VeriSeti> veriSetis=new JsonAyristir().dosyaUrlveKonumGetir(jsonDosyasi);
+		CountDownLatch countDownLatch = new CountDownLatch(veriSetis.size());
+		for(VeriSeti veriSeti : veriSetis)
+		{
+			//System.out.println(veriSeti.getUrl()+" "+veriSeti.getKonum()+" "+veriSeti.getSure());
+			new Thread(new Dosya(veriSeti.getUrl()
+					,veriSeti.getKonum()
+					,veriSeti.getSure()
+					,countDownLatch)
+					.DosyaCek()).start();			
+		}
+		try {
+			countDownLatch.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		System.out.println("Tum indirmeler tamamlandi.");
+		System.exit(0);
 	}
 }

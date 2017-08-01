@@ -7,16 +7,16 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Hashtable;
+import java.util.ArrayList;
 
 public class JsonAyristir {
-    private Hashtable<String, String> hashUrlKonum;
+    private ArrayList<VeriSeti> veriSeti;
 
     public JsonAyristir(){
-        hashUrlKonum = new Hashtable<String,String>();
+    	veriSeti= new ArrayList<VeriSeti>();
     }
 
-    public Hashtable<String, String> dosyaUrlveKonumGetir(String jsonDosyasi) {
+    public ArrayList<VeriSeti> dosyaUrlveKonumGetir(String jsonDosyasi) {
 
         String jsonData = "";
         BufferedReader br = null;
@@ -43,12 +43,13 @@ public class JsonAyristir {
                 JSONObject object = array.getJSONObject(i);
                 String url = object.getString("url");
                 String konum = object.getString("konum");
-                hashUrlKonum.put(url, konum);
+                String sure = object.getString("sure");
+                veriSeti.add((new VeriSeti(url,konum,sure)));
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        return hashUrlKonum;
+        return veriSeti;
     }
 }
