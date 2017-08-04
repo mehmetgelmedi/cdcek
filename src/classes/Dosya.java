@@ -8,23 +8,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.CountDownLatch;
 
 public class Dosya implements Runnable {
 	
 	private URI url;
 	private Path path;
 	private Timer timer;
-	private Date date;
-	private String sure;
-	private CountDownLatch countDownLatch;
+	private int sure;
 	
-	public Dosya(String url, String konum, String sure, CountDownLatch countDownLatch) {
+	public Dosya(String url, String konum, String sure) {
 		try {
 			this.url=new URI(url);
 		} catch (URISyntaxException e) {
@@ -32,13 +26,10 @@ public class Dosya implements Runnable {
 		}
 		path =Paths.get(konum+getUzanti());
 		timer =new Timer();
-		date =new Date();
-		this.sure =sure;
-		this.countDownLatch=countDownLatch;
+		this.sure = Integer.parseInt(sure);
 	}
 	
 	public Runnable DosyaCek() {
-		sureAyristir();
 		timer.scheduleAtFixedRate(new TimerTask() {
 			@Override
 			public void run() {
@@ -47,12 +38,11 @@ public class Dosya implements Runnable {
 				    Files.copy(in, path, StandardCopyOption.REPLACE_EXISTING);
 				    in.close();
 				    System.out.println(getUzanti()+" ,dosyasi belirtilen konuma indirildi.");
-				    countDownLatch.countDown();
 				}catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
-		}, date, 1000*60*1440); //ne zaman , ne kadar surede(1 gun)
+		}, 0, 1000*3600*sure); //ne zaman(þimdi) , ne kadar surede(saat bazinda)
 		return null;
 	}
 	public String getUzanti(){
@@ -63,15 +53,6 @@ public class Dosya implements Runnable {
 			dosyaAdi_uzanti = url.toString().substring(i+1);
 		}
 		return dosyaAdi_uzanti;
-	}
-	public void sureAyristir(){
-		SimpleDateFormat sdf = new SimpleDateFormat("d.M.yyyy hh:mm:ss");
-		try {
-			date =sdf.parse(sure);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	@Override
